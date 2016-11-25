@@ -6,17 +6,58 @@
 	</title>
 	<script type="text/javascript" src="d3.min.js"></script>
 	<style type="text/css">
-	
+		@keyframes starsMove {
+		  0% { 
+			  	-ms-transform: translate(50px,100px); /* IE 9 */
+	   			 -webkit-transform: translate(50px,100px); /* Safari */
+	    		transform: translate(50px,100px); /* Standard syntax */ 
+    		}
+		  10% { 
+			  	-ms-transform: translate(80px,100px); /* IE 9 */
+	   			 -webkit-transform: translate(80px,700px); /* Safari */
+	    		transform: translate(80px,100px); /* Standard syntax */ 
+    		}
+		  15% { 
+			  	-ms-transform: translate(150px,100px); /* IE 9 */
+	   			 -webkit-transform: translate(150px,100px); /* Safari */
+	    		transform: translate(150px,100px); /* Standard syntax */ 
+    		}
+		  100% { 
+			  	-ms-transform: translate(350px,100px); /* IE 9 */
+	   			 -webkit-transform: translate(350px,100px); /* Safari */
+	    		transform: translate(350px,100px); /* Standard syntax */ 
+    		}
+		} 
+
+		/*.star {
+			  animation: starsMove  10s ease infinite;
+			}*/
 	</style>
 	
 </head>
 <body>
 
 <script type="text/javascript">
+	let dataset = [1,2,3,4,5,6,7,8,9,10,12,15];
 
-	const dataset = [ 5, 10, 15, 20, 25 ];
-	const h = 500;
-	const w = 1000;
+	//rate 1:1000m 1:10m
+
+	//atmosphere is 500km => 500km = 500 *1000m  => 500 000px
+	const h = 30000;
+	const w = 1200;
+	const rocketHeight = 100;
+	const distanceToFly = 200; //km to fly for the rocker
+	const universeWidth = 600;
+
+	function generateStars(num){
+		let arr = [];
+		for(var i = 0; i <= num.length; i++){
+			arr.push(3);
+		}
+		return arr;
+	}
+
+	dataset = generateStars(20);
 
 	function randmizeStarPosition(){
 		let width = Math.floor(Math.random() * w) + 1;
@@ -26,8 +67,17 @@
 
 	const svg = d3.select("body").append("svg");
 	svg
-	.attr("width", "100vw")
-   	.attr("height", "100vh");
+	.attr("width", w)
+   	.attr("height", h);
+
+   	//scale spheres here 
+   	//MAYBY?????
+   	
+   	/*var scale = d3.scale.linear()
+   					//distance
+                    .domain([1, 200])
+                    //svg height
+                    .range([1, 600]);*/
 
    	const mainGroup = svg.append("g");
 
@@ -39,9 +89,73 @@
    			.attr("width", w)
    			.attr("fill", " blue");
 
+   	const tropopauze = mainGroup.append("g"); //12 km => 12 * 1000m => 120 00m/100 => 120px
+   	const stratopauze = mainGroup.append("g"); //45 km => 45 000m => 450 px
+   	const mesopauze = mainGroup.append("g"); //85 km => 85 000m => 850 px
+   	const thermopauze = mainGroup.append("g"); //200km > 200 0 00 = 2000 px
+   	const ionosfeer = mainGroup.append("g"); //500km
+
+   	const tropopauzeHeight = 1200;
+   	const stratopauzeHeight = 4500;
+   	const mesopauzeHeight = 8500;
+   	const thermopauzeHeight = 20000;
+   	const ionosfeerHeight = 30000;
+
+   	tropopauze
+   	.attr("id", "tropopauze")
+ 	.attr("transform", "translate(0," + (h-tropopauzeHeight) +")")
+   	.append("rect")
+   	.attr("x", 0)
+   	.attr("y", 0)
+   	.attr("height", tropopauzeHeight)
+   	.attr("width", w)
+   	.attr("fill", "green");
 
 
-  	let starts = mainGroup.selectAll("circle")
+   	stratopauze
+   	.attr("id", "stratopauze")
+ 	.attr("transform", "translate(0," + (h-stratopauzeHeight) +")")
+   	.append("rect")
+   	.attr("x", 0)
+   	.attr("y", 0)
+   	.attr("height", stratopauzeHeight-tropopauzeHeight)
+   	.attr("width", w)
+   	.attr("fill", "pink");
+
+   	mesopauze
+   	.attr("id", "mesopauze")
+ 	.attr("transform", "translate(0," + (h-mesopauzeHeight) +")")
+   	.append("rect")
+   	.attr("x", 0)
+   	.attr("y", 0)
+   	.attr("height", mesopauzeHeight - stratopauzeHeight)
+   	.attr("width", w)
+   	.attr("fill", "red");
+
+   	thermopauze
+   	.attr("id", "thermopauze")
+ 	.attr("transform", "translate(0," + (h-thermopauzeHeight) +")")
+   	.append("rect")
+   	.attr("x", 0)
+   	.attr("y", 0)
+   	.attr("height", thermopauzeHeight - mesopauzeHeight)
+   	.attr("width", w)
+   	.attr("fill", "violet");
+
+   	ionosfeer
+   	.attr("id", "ionosfeer")
+ 	.attr("transform", "translate(0," + (h-ionosfeerHeight) +")")
+   	.append("rect")
+   	.attr("x", 0)
+   	.attr("y", 0)
+   	.attr("height", ionosfeerHeight - thermopauzeHeight)
+   	.attr("width", w)
+   	.attr("fill", "lightblue");
+
+
+   	let starsGroup = ionosfeer.append("g");
+
+  	let stars = starsGroup.selectAll("circle")
                 .data(dataset)
                 .enter()
                 .append("circle")
@@ -56,13 +170,37 @@
 			    })
 			    //style
 			    .attr("fill", "yellow");
+	
+	d3.selectAll("circle")
+		.attr("class", "star");
+
+
+	/*teamG
+ .append("circle").attr("r", 0)
+ .transition()
+ .delay(function(d,i) {return i * 100})
+ .duration(500)
+ .attr("r", 40)
+ .transition()
+ .duration(500)
+ .attr("r", 20);*/
+	
 	let rocket = mainGroup
 				.append("rect")
+				.attr("class", "rocket")
    				.attr("x", w/2)
-   				.attr("y", h)
+   				.attr("y", h-rocketHeight)
    				.attr("width", 20)
-   				.attr("height", 100);
-					
+   				.attr("height", rocketHeight)
+   				;
+
+
+d3.selectAll(".rocket")
+.transition()
+		.duration(2000000)
+		.attr("y", -(Math.floor(Math.random() * h) + 1));
+			
+	
 
 	</script>
 </body>
