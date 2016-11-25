@@ -14,15 +14,24 @@
 
 <script type="text/javascript">
 	var dataset = [ 5, 10, 15, 20, 25 ];
-	d3.select("body")
-		.selectAll("p")
-    	.data(dataset)
-    	.enter()
-    	.append("p")
-    	.text(function(d) { return d; })
-    	.append("div")
-    	.attr("class", "bar");
-		//d3.select("body").append("p").text("New paragraph!");
+	var h = 800;
+	var svg = d3.select("body").append("svg");
+	svg
+	.attr("width", "100vw")
+   	.attr("height", "100vh");
+
+   	var starts = svg.selectAll("circle")
+                 .data(dataset)
+                 .enter()
+                 .append("circle")
+                 .attr("cx", function(d, i) {
+			            return (i * 50) + 25;
+			       })
+       			.attr("cy", h/2)
+		       .attr("r", function(d) {
+		            return d;
+		       });
+
 	</script>
 </body>
 </html>
