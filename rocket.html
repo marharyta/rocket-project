@@ -45,16 +45,22 @@
 	//atmosphere is 500km => 500km = 500 *1000m  => 500 000px
 	const h = 30000;
 	const w = 1200;
-	const rocketHeight = 100;
-	const distanceToFly = 200; //km to fly for the rocker
-	const universeWidth = 600;
-
+	const rocketHeight = 50;
+	const distanceToFly = 2000; //km to fly for the rocker
+	const universeWidth = 1200;
 
 
 	const svg = d3.select("body").append("svg");
-	svg
+	/*svg
 	.attr("width", w)
    	.attr("height", h);
+   	*/
+
+   	svg .attr("width", 900)
+   		.attr("height", 500)
+   		.attr("preserveAspectRatio", "xMidYMin "+ "slice")
+   		.attr("viewBox", " " + 0 + " "+ 29900 + " " + w + " " + h + " ")
+   		.attr("viewBox", " " + 0 + " "+ ((h-rocketHeight)- 40) + " " + w + " " + h + " ");
 
    	//scale spheres here 
    	//MAYBY?????
@@ -193,24 +199,43 @@
    				.attr("x", w/2)
    				.attr("y", h-rocketHeight)
    				.attr("width", 20)
-   				.attr("height", rocketHeight)
-   				;
+   				.attr("height", rocketHeight);
 
 
-d3.selectAll(".rocket")
-.transition()
-		.duration(2000000)
-		.attr("y", -(Math.floor(Math.random() * h) + 1));
-			
+/*
+*/			
 	function calculateViewBoxCoordinates(x, y, width, height){
 
 		svg
-			.attr("width", 500)
+			.attr("width", 900)
    			.attr("height", 500)
+   			.attr("preserveAspectRatio ","xMinYMin "+ "slice")
    			.attr("viewBox", "" + x + " "+ y + " " + width + " " + height + "");
 	}
 
-	calculateViewBoxCoordinates(0, 0, 200, 200);
+	//distance from startt track im metres x coord
+	//distance from strat track in metres y coord
+
+
+
+	//calculateViewBoxCoordinates(100, 2000, w, h);
+
+	function followRocket (yOfRocket, yOfViewPOrt, speedOfFlight, distanceOfFlight, durationOfFlight){
+		//durationOfFlight = (distanceOfFlight/speedOfFlight);
+
+		durationOfFlight = 20000;
+		svg 
+   		.transition()
+		.duration(durationOfFlight)
+		.attr("viewBox", " " + 0 + " "+ (h-distanceOfFlight-rocketHeight) + " " + w + " " + h + " ");
+
+		d3.selectAll(".rocket")
+			.transition()
+			.duration(durationOfFlight)
+			.attr("y", h - distanceOfFlight);
+
+	}
+	followRocket (0,0, 200, 1000, 0);
 
 	</script>
 </body>
