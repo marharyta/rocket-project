@@ -29,16 +29,17 @@
     		}
 		} 
 
-		.star {
+		/*.star {
 			  animation: starsMove  10s ease infinite;
-			}
+			}*/
 	</style>
 	
 </head>
 <body>
-
+<button id="start">Start</button>
+<button id="stop">Stop</button>
 <script type="text/javascript">
-	let dataset = [1,2,3,4,5,6,7,8,9,10,12,15];
+	let dataset = [];
 
 	//rate 1:10m
 
@@ -51,10 +52,6 @@
 
 
 	const svg = d3.select("body").append("svg");
-	/*svg
-	.attr("width", w)
-   	.attr("height", h);
-   	*/
 
    	svg .attr("width", 900)
    		.attr("height", 500)
@@ -71,6 +68,26 @@
                     //svg height
                     .range([1, 600]);*/
 
+    //create defs
+    var skyGradient = svg.append("defs")
+    .append("linearGradient")
+    .attr("id", "skyGradient")
+    .attr("x1", "0.5")
+    .attr("x2", "0.5")
+    .attr("y1", "1")
+    .attr("y2", "0.9");
+
+    skyGradient
+    .append("stop")	
+    .attr("offset", "0%")
+    .attr("stop-color", "lightblue");
+    
+    skyGradient
+    .append("stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "darkblue");
+
+
    	const mainGroup = svg.append("g");
 
    	const backgroundSky = mainGroup
@@ -79,7 +96,7 @@
    			.attr("y", 0)
    			.attr("height", h)
    			.attr("width", w)
-   			.attr("fill", " blue");
+   			.attr("fill", "url(#skyGradient)");
 
    	const tropopauze = mainGroup.append("g"); //12 km => 12 * 1000m => 120 00m/100 => 120px
    	const stratopauze = mainGroup.append("g"); //45 km => 45 000m => 450 px
@@ -101,7 +118,7 @@
    	.attr("y", 0)
    	.attr("height", tropopauzeHeight)
    	.attr("width", w)
-   	.attr("fill", "green");
+   	.attr("fill", "transparent");
 
 
    	stratopauze
@@ -112,7 +129,7 @@
    	.attr("y", 0)
    	.attr("height", stratopauzeHeight-tropopauzeHeight)
    	.attr("width", w)
-   	.attr("fill", "pink");
+   	.attr("fill", "transparent");
 
    	mesopauze
    	.attr("id", "mesopauze")
@@ -122,7 +139,7 @@
    	.attr("y", 0)
    	.attr("height", mesopauzeHeight - stratopauzeHeight)
    	.attr("width", w)
-   	.attr("fill", "red");
+   	.attr("fill", "transparent");
 
    	thermopauze
    	.attr("id", "thermopauze")
@@ -132,7 +149,7 @@
    	.attr("y", 0)
    	.attr("height", thermopauzeHeight - mesopauzeHeight)
    	.attr("width", w)
-   	.attr("fill", "violet");
+   	.attr("fill", "transparent");
 
    	ionosfeer
    	.attr("id", "ionosfeer")
@@ -142,7 +159,7 @@
    	.attr("y", 0)
    	.attr("height", ionosfeerHeight - thermopauzeHeight)
    	.attr("width", w)
-   	.attr("fill", "lightblue");
+   	.attr("fill", "transparent");
 
 
    	let starsGroup = ionosfeer.append("g");
@@ -163,35 +180,11 @@
 		return [width, height];
 	}
 
-  	let stars = starsGroup.selectAll("circle")
-                .data(dataset)
-                .enter()
-                .append("circle")
-                .attr("cx", function(d, i) {
-			        return randmizeStarPosition()[0];
-			    })
-       			.attr("cy", function(){
-       				return randmizeStarPosition()[1];
-       			})
-			    .attr("r", function(d) {
-			            return d;
-			    })
-			    //style
-			    .attr("fill", "yellow");
+  	
 	
 	d3.selectAll("circle")
 		.attr("class", "star");
 
-
-	/*teamG
- .append("circle").attr("r", 0)
- .transition()
- .delay(function(d,i) {return i * 100})
- .duration(500)
- .attr("r", 40)
- .transition()
- .duration(500)
- .attr("r", 20);*/
 	
 	let rocket = mainGroup
 				.append("rect")
@@ -200,25 +193,6 @@
    				.attr("y", h-rocketHeight)
    				.attr("width", 20)
    				.attr("height", rocketHeight);
-
-
-/*
-*/			
-	function calculateViewBoxCoordinates(x, y, width, height){
-
-		svg
-			.attr("width", 900)
-   			.attr("height", 500)
-   			.attr("preserveAspectRatio ","xMinYMin "+ "slice")
-   			.attr("viewBox", "" + x + " "+ y + " " + width + " " + height + "");
-	}
-
-	//distance from startt track im metres x coord
-	//distance from strat track in metres y coord
-
-
-
-	//calculateViewBoxCoordinates(100, 2000, w, h);
 
 	function followRocket (yOfRocket, yOfViewPOrt, speedOfFlight, distanceOfFlight, durationOfFlight){
 		//durationOfFlight = (distanceOfFlight/speedOfFlight);
@@ -235,7 +209,64 @@
 			.attr("y", h - distanceOfFlight);
 
 	}
-	followRocket (0,0, 200, 1000, 0);
+
+	
+	//followRocket (0,0, 200, 10000, 0);
+
+	let stars = starsGroup.selectAll("circle")
+                .data(dataset)
+                .enter()
+                .append("circle")
+                .attr("cx", function(d, i) {
+			        return randmizeStarPosition()[0];
+			    })
+       			.attr("cy", function(){
+       				return randmizeStarPosition()[1];
+       			})
+			    .attr("r", function(d) {
+			            return d;
+			    })
+			    //style
+			    .attr("fill", "yellow");
+	//loop to change dinamically coordinates of the rocket
+	
+
+	//var element = document.getElementById("SomeElementYouWantToAnimate");
+	//element.style.position = 'absolute';
+	
+	function launchRocket(yPosition, xPosition){
+		var yPos = yPosition;
+		var start = null;
+		var rocketFly;
+
+		function step(timestamp) {
+		  if (!start) start = timestamp;
+		  var progress = timestamp - start;
+		  console.log(progress);
+		  
+		  yPos = progress;
+		  svg.attr("viewBox", " " + 0 + " "+ (h-yPos-rocketHeight) + " " + w + " " + h + " ");
+		 
+		  d3.selectAll(".rocket").attr("y", (h-yPos));
+
+		  if (yPos < (30000-rocketHeight)) {
+		    rocketFly = window.requestAnimationFrame(step);
+		  }
+
+		}
+
+		window.requestAnimationFrame(step);
+		document.getElementById("stop").addEventListener("click", function() {
+		  cancelAnimationFrame(rocketFly);
+		});
+	}
+
+	document.getElementById("start").addEventListener("click", function() {
+	    launchRocket(0, 0);
+	});
+
+	
+
 
 	</script>
 </body>
