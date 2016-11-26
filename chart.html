@@ -1,0 +1,29 @@
+<!DOCTYPE>
+<html>
+
+<head>
+
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://rawgithub.com/highslide-software/draggable-points/master/draggable-points.js?1"></script>
+
+<script type="text/javascript" src="./src/fuel-chart.js"></script>
+
+<script type="text/javascript">
+
+function onBodyLoad() {
+    const fuelChart = getFuelChart('fuelChart');
+    
+    window.fuelChart = fuelChart;
+    
+    console.log(fuelChart);
+    console.log(getFuelData(fuelChart).map(({ fuel }) => fuel));
+}
+
+</script>
+
+</head>
+
+<body onload="onBodyLoad()">
+    <div id="fuelChart" style="height: 400px"></div>
+</body>
