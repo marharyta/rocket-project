@@ -12,26 +12,26 @@
 	   			 -webkit-transform: translate(50px,100px); /* Safari */
 	    		transform: translate(50px,100px); /* Standard syntax */ 
     		}
-		  10% { 
-			  	-ms-transform: translate(80px,100px); /* IE 9 */
-	   			 -webkit-transform: translate(80px,700px); /* Safari */
-	    		transform: translate(80px,100px); /* Standard syntax */ 
+		  25% { 
+			  	-ms-transform: translate(80px,300px); /* IE 9 */
+	   			 -webkit-transform: translate(80px,300px); /* Safari */
+	    		transform: translate(80px,300px); /* Standard syntax */ 
     		}
-		  15% { 
-			  	-ms-transform: translate(150px,100px); /* IE 9 */
-	   			 -webkit-transform: translate(150px,100px); /* Safari */
-	    		transform: translate(150px,100px); /* Standard syntax */ 
+		  50% { 
+			  	-ms-transform: translate(150px,350px); /* IE 9 */
+	   			 -webkit-transform: translate(150px,350px); /* Safari */
+	    		transform: translate(150px,350px); /* Standard syntax */ 
     		}
 		  100% { 
-			  	-ms-transform: translate(350px,100px); /* IE 9 */
-	   			 -webkit-transform: translate(350px,100px); /* Safari */
-	    		transform: translate(350px,100px); /* Standard syntax */ 
+			  	-ms-transform: translate(50px,200px); /* IE 9 */
+	   			 -webkit-transform: translate(50px,200px); /* Safari */
+	    		transform: translate(50px,200px); /* Standard syntax */ 
     		}
 		} 
 
-		/*.star {
+		.star {
 			  animation: starsMove  10s ease infinite;
-			}*/
+			}
 	</style>
 	
 </head>
@@ -40,7 +40,7 @@
 <script type="text/javascript">
 	let dataset = [1,2,3,4,5,6,7,8,9,10,12,15];
 
-	//rate 1:1000m 1:10m
+	//rate 1:10m
 
 	//atmosphere is 500km => 500km = 500 *1000m  => 500 000px
 	const h = 30000;
@@ -49,21 +49,7 @@
 	const distanceToFly = 200; //km to fly for the rocker
 	const universeWidth = 600;
 
-	function generateStars(num){
-		let arr = [];
-		for(var i = 0; i <= num.length; i++){
-			arr.push(3);
-		}
-		return arr;
-	}
 
-	dataset = generateStars(20);
-
-	function randmizeStarPosition(){
-		let width = Math.floor(Math.random() * w) + 1;
-		let height = Math.floor(Math.random() * h) + 1;
-		return [width, height];
-	}
 
 	const svg = d3.select("body").append("svg");
 	svg
@@ -155,6 +141,22 @@
 
    	let starsGroup = ionosfeer.append("g");
 
+   	function generateStars(num){
+		let arr = [];
+		for(var i = 0; i <= num; i++){
+			arr.push(3);
+		}
+		return arr;
+	}
+
+	dataset = generateStars(500);
+
+	function randmizeStarPosition(){
+		let width = Math.floor(Math.random() * w) + 1;
+		let height = Math.floor(Math.random() * (ionosfeerHeight - thermopauzeHeight)) + 1;
+		return [width, height];
+	}
+
   	let stars = starsGroup.selectAll("circle")
                 .data(dataset)
                 .enter()
@@ -200,7 +202,15 @@ d3.selectAll(".rocket")
 		.duration(2000000)
 		.attr("y", -(Math.floor(Math.random() * h) + 1));
 			
-	
+	function calculateViewBoxCoordinates(x, y, width, height){
+
+		svg
+			.attr("width", 500)
+   			.attr("height", 500)
+   			.attr("viewBox", "" + x + " "+ y + " " + width + " " + height + "");
+	}
+
+	calculateViewBoxCoordinates(0, 0, 200, 200);
 
 	</script>
 </body>
