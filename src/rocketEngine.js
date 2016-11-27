@@ -1,7 +1,7 @@
 
 const launch = (() => {
 
-return function* launch(
+function* launch(
             fuelConsumption,
             maxAltitude = 226000,
             defaultDeltaTime = .01,
@@ -112,5 +112,7 @@ function getVelVector(y) {
     const abs = Math.sqrt(der * der + 1);
     return [der / abs, 1 / abs];
 }
+
+return launch;
 
 })();
