@@ -8,8 +8,8 @@ function* launch(
             gasVelocity = 3173,
             rocketMass = 270000,
             minMass = 2000,
-            maxVelocity = Infinity/*7900*/,
-            maxAcc = Infinity/*12*/,
+            maxVelocity = 7900,
+            maxAcc = 12,
             maxTime = 600
         ) {
     
@@ -42,7 +42,7 @@ function* launch(
         const { vx, vy } = state.velocity;
         return state.mass > minMass
             && vx * vx + vy * vy < maxVelocity * maxVelocity
-            && state.acceleration < maxAcc
+            && Math.abs(state.acceleration) < maxAcc
             && state.position.y < maxAltitude;
     }
 }
@@ -71,8 +71,8 @@ function calculateNext(
     const [dx, dy] = getVelVector(currY);
     const c = dx / dy;
     const b = (c * currVy - currVx) / deltaTime;
-    
-    const ay = (- 2 * b * c + Math.sqrt(4 * b * b * c * c - 4 * (b * b - a * a) * (c * c + 1))) / (2 * (c * c + 1));
+    const D = b * b * c * c - (b * b - a * a) * (c * c + 1);
+    const ay = (- b * c + Math.sqrt(Math.max(D, 0))) / (c * c + 1);
     const ax = c * ay + b;
     
     // console.log(a, [ax, ay], [b, c], [dx, dy], deltaTime);
@@ -82,6 +82,11 @@ function calculateNext(
     
     const x = currX + vx * deltaTime;
     const y = currY + vy * deltaTime;
+    
+    if ([x, y, vx, vy].some(isNaN)) {
+        console.error(a, b, c, `D=${D}`);
+        throw new Error('nan');
+    }
     
     return {
         mass,

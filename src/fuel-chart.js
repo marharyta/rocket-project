@@ -2,16 +2,16 @@
 function getFuelChart(
             renderTo,
             initFuelValues = defaultInitFuelValues,
-            maxFuelValueOnChart = 500,
-            maxHeight = 200
+            maxAltitude = 250,
+            maxFuelValueOnChart = 500
         ) {
     
-    const dh = maxHeight / (initFuelValues.length - 1);
+    const dh = maxAltitude / (initFuelValues.length - 1);
     const initData = initFuelValues.map((fuel, i) => [Math.round(i * dh), fuel]);
     
     const chartOptions = JSON.parse(JSON.stringify(defaultChartOptions));
     
-    chartOptions.xAxis.max = maxHeight;
+    chartOptions.xAxis.max = maxAltitude;
     chartOptions.yAxis.softMax = maxFuelValueOnChart;
     chartOptions.series[0].data = initData;
     chartOptions.chart.renderTo = renderTo;
@@ -20,7 +20,7 @@ function getFuelChart(
 }
 
 function getFuelData(chart) {
-    return chart.series[0].data.map(({ x: height, y: fuel }) => ({ height, fuel }));
+    return chart.series[0].data.map(({ x: altitude, y: fuel }) => ({ altitude, fuel }));
 }
 
 // default values:
@@ -53,14 +53,6 @@ const defaultChartOptions = {
 
     plotOptions: {
         series: {
-            point: {
-                events: {
-                    drag: function (e) {},
-                    drop: function () {
-                        // console.log(this.x, this.y);
-                    }
-                }
-            },
             stickyTracking: false
         },
         line: {
