@@ -8,16 +8,47 @@
 <script src="https://rawgithub.com/highslide-software/draggable-points/master/draggable-points.js?1"></script>
 
 <script type="text/javascript" src="./src/fuel-chart.js"></script>
+<script type="text/javascript" src="./src/rocketEngine.js"></script>
 
 <script type="text/javascript">
 
 function onBodyLoad() {
-    const fuelChart = getFuelChart('fuelChart');
+    const initValues = [324, 350, 265, 122, 0, 0, 0, 0, 0, 0];
+    const fuelChart = getFuelChart('fuelChart', initValues);
     
     window.fuelChart = fuelChart;
     
     console.log(fuelChart);
-    console.log(getFuelData(fuelChart).map(({ fuel }) => fuel));
+}
+
+function run() {
+    const data = getFuelData(fuelChart);
+    console.log(getFuelData(fuelChart).map(({ fuel }) => fuel).map(Math.round).join(', '));
+    
+    const fuelConsumption = y => {
+        y /= 1000;
+        const i = data.findIndex(({ altitude }) => y >= altitude);
+        const res = i >= data.length - 1 ? 0
+            : data[i].fuel + (data[i + 1].fuel - data[i].fuel)
+                * (y - data[i].altitude) / (data[i + 1].altitude - data[i].altitude);
+        return res;
+    };
+    
+    const gen = launch(fuelConsumption/*, 27000*/);
+    let time;
+    
+    const animate = () => !updateState().done && requestAnimationFrame(animate);
+    animate();
+    
+    function updateState() {
+        const diff = -(time || (time = Date.now() - 1)) + (time = Date.now());
+        const state = gen.next(diff / 10);
+        
+        if (!state.done) {
+            document.getElementById('res').textContent = JSON.stringify(state.value, null, '  ');
+        }
+        return state;
+    }
 }
 
 </script>
@@ -25,5 +56,8 @@ function onBodyLoad() {
 </head>
 
 <body onload="onBodyLoad()">
-    <div id="fuelChart" style="height: 400px"></div>
+    <div id="fuelChart" style="height: 300px"></div>
+    <br>
+    <div><button onclick="run()">Go!</button></div>
+    <pre id="res"></pre>
 </body>
