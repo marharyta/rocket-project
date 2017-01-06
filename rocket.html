@@ -39,8 +39,6 @@
 <button id="start">Start</button>
 <button id="stop">Stop</button>
 <script type="text/javascript">
-	let dataset = [];
-
 	//rate 1:10m
 
 	//atmosphere is 500km => 500km = 500 *1000m  => 500 000px
@@ -50,46 +48,70 @@
 	const distanceToFly = 2000; //km to fly for the rocker
 	const universeWidth = 1200;
 
-
 	const svg = d3.select("body").append("svg");
 
-   	svg .attr("width", 900)
-   		.attr("height", 500)
+   	svg	.attr("width", 900)
+   		.attr("height", 500)//500
    		.attr("preserveAspectRatio", "xMidYMin "+ "slice")
    		.attr("viewBox", " " + 0 + " "+ 29900 + " " + w + " " + h + " ")
    		.attr("viewBox", " " + 0 + " "+ ((h-rocketHeight)- 40) + " " + w + " " + h + " ");
 
-   	//scale spheres here 
-   	//MAYBY?????
-   	
-   	/*var scale = d3.scale.linear()
-   					//distance
-                    .domain([1, 200])
-                    //svg height
-                    .range([1, 600]);*/
 
-    //create defs
-    var skyGradient = svg.append("defs")
-    .append("linearGradient")
-    .attr("id", "skyGradient")
-    .attr("x1", "0.5")
-    .attr("x2", "0.5")
-    .attr("y1", "1")
-    .attr("y2", "0.9");
+   	//create defs
+
+   	var defs = svg.append("defs");
+
+    var skyGradient = defs
+    	.append("linearGradient")
+    	.attr("id", "skyGradient")
+    	.attr("x1", "0.5")
+    	.attr("x2", "0.5")
+    	.attr("y1", "1")
+    	.attr("y2", "0.5");
 
     skyGradient
-    .append("stop")	
-    .attr("offset", "0%")
-    .attr("stop-color", "lightblue");
+    	.append("stop")	
+    	.attr("offset", "0%")
+    	.attr("stop-color", "lightblue");
+    
     
     skyGradient
-    .append("stop")
-    .attr("offset", "100%")
-    .attr("stop-color", "darkblue");
+    	.append("stop")
+    	.attr("offset", "75%")
+    	.attr("stop-color", "#213B63");
+
+    skyGradient
+    	.append("stop")
+    	.attr("offset", "100%")
+    	.attr("stop-color", "#122036");
+
+    var ozoneLayerGradient = defs
+    	.append("linearGradient")
+    	.attr("id", "ozoneLayerGradient")
+    	.attr("x1", "0.5")
+    	.attr("x2", "0.5")
+    	.attr("y1", "1")
+    	.attr("y2", "0");
+
+    ozoneLayerGradient
+    	.append("stop")	
+    	.attr("offset", "0%")
+    	.attr("stop-color", "rgba(87,199,167, 0.01)"); //rgb(87,199,167) rgb(121,210167)
+
+    ozoneLayerGradient
+    	.append("stop")	
+    	.attr("offset", "50%")
+    	.attr("stop-color", "rgba(87,199,167, 0.9)");
+    
+    ozoneLayerGradient
+    	.append("stop")
+    	.attr("offset", "100%")
+    	.attr("stop-color", "rgba(87,199,167, 0.01)");
 
 
    	const mainGroup = svg.append("g");
 
+   	//background
    	const backgroundSky = mainGroup
    			.append("rect")
    			.attr("x", 0)
@@ -98,10 +120,11 @@
    			.attr("width", w)
    			.attr("fill", "url(#skyGradient)");
 
-   	const tropopauze = mainGroup.append("g"); //12 km => 12 * 1000m => 120 00m/100 => 120px
-   	const stratopauze = mainGroup.append("g"); //45 km => 45 000m => 450 px
-   	const mesopauze = mainGroup.append("g"); //85 km => 85 000m => 850 px
-   	const thermopauze = mainGroup.append("g"); //200km > 200 0 00 = 2000 px
+   	//atmosphere layers
+   	const tropopauze = mainGroup.append("g"); //12 km => 12 * 1000m => 120 00m/100 => 1200px
+   	const stratopauze = mainGroup.append("g"); //45 km => 45 000m => 4500px
+   	const mesopauze = mainGroup.append("g"); //85 km => 85 000m => 8500px
+   	const thermopauze = mainGroup.append("g"); //200km > 200 0 00 = 20000px
    	const ionosfeer = mainGroup.append("g"); //500km
 
    	const tropopauzeHeight = 1200;
@@ -111,60 +134,137 @@
    	const ionosfeerHeight = 30000;
 
    	tropopauze
-   	.attr("id", "tropopauze")
- 	.attr("transform", "translate(0," + (h-tropopauzeHeight) +")")
-   	.append("rect")
-   	.attr("x", 0)
-   	.attr("y", 0)
-   	.attr("height", tropopauzeHeight)
-   	.attr("width", w)
-   	.attr("fill", "transparent");
+   		.attr("id", "tropopauze")
+ 		.attr("transform", "translate(0," + (h-tropopauzeHeight) +")")
+   		.append("rect")
+   		.attr("x", 0)
+   		.attr("y", 0)
+   		.attr("height", tropopauzeHeight)
+   		.attr("width", w)
+   		.attr("fill", "transparent");
 
 
    	stratopauze
-   	.attr("id", "stratopauze")
- 	.attr("transform", "translate(0," + (h-stratopauzeHeight) +")")
-   	.append("rect")
-   	.attr("x", 0)
-   	.attr("y", 0)
-   	.attr("height", stratopauzeHeight-tropopauzeHeight)
-   	.attr("width", w)
-   	.attr("fill", "transparent");
+   		.attr("id", "stratopauze")
+ 		.attr("transform", "translate(0," + (h-stratopauzeHeight) +")")
+   		.append("rect")
+   		.attr("x", 0)
+   		.attr("y", 0)
+   		.attr("height", stratopauzeHeight-tropopauzeHeight)
+   		.attr("width", w)
+   		.attr("fill", "transparent");
 
    	mesopauze
-   	.attr("id", "mesopauze")
- 	.attr("transform", "translate(0," + (h-mesopauzeHeight) +")")
-   	.append("rect")
-   	.attr("x", 0)
-   	.attr("y", 0)
-   	.attr("height", mesopauzeHeight - stratopauzeHeight)
-   	.attr("width", w)
-   	.attr("fill", "transparent");
+   		.attr("id", "mesopauze")
+ 		.attr("transform", "translate(0," + (h-mesopauzeHeight) +")")
+   		.append("rect")
+   		.attr("x", 0)
+   		.attr("y", 0)
+   		.attr("height", mesopauzeHeight - stratopauzeHeight)
+   		.attr("width", w)
+   		.attr("fill", "transparent");
 
    	thermopauze
-   	.attr("id", "thermopauze")
- 	.attr("transform", "translate(0," + (h-thermopauzeHeight) +")")
-   	.append("rect")
-   	.attr("x", 0)
-   	.attr("y", 0)
-   	.attr("height", thermopauzeHeight - mesopauzeHeight)
-   	.attr("width", w)
-   	.attr("fill", "transparent");
+   		.attr("id", "thermopauze")
+ 		.attr("transform", "translate(0," + (h-thermopauzeHeight) +")")
+   		.append("rect")
+   		.attr("x", 0)
+   		.attr("y", 0)
+   		.attr("height", thermopauzeHeight - mesopauzeHeight)
+   		.attr("width", w)
+   		.attr("fill", "transparent");
 
    	ionosfeer
-   	.attr("id", "ionosfeer")
- 	.attr("transform", "translate(0," + (h-ionosfeerHeight) +")")
-   	.append("rect")
+   		.attr("id", "ionosfeer")
+ 		.attr("transform", "translate(0," + (h-ionosfeerHeight) +")")
+   		.append("rect")
+   		.attr("x", 0)
+   		.attr("y", 0)
+   		.attr("height", ionosfeerHeight - thermopauzeHeight)
+   		.attr("width", w)
+   		.attr("fill", "transparent");
+
+   	//checkpoints
+
+   	tropopauze
+   		.append("text")
+   		.attr("x",20)
+ 		.attr("y",0)
+ 		.text("Troposphere");
+ 	stratopauze
+ 		.append("text")
+   		.attr("x",20)
+ 		.attr("y",0)
+ 		.text("Stratosphere");
+ 	mesopauze
+ 		.append("text")
+   		.attr("x",20)
+ 		.attr("y",0)
+ 		.text("Mesosphere");
+ 	thermopauze
+ 		.append("text")
+   		.attr("x",20)
+ 		.attr("y",0)
+ 		.text("Thermosphere");
+ 	ionosfeer
+ 		.append("text")
+   		.attr("x",20)
+ 		.attr("y",0)
+ 		.text("Ionosphere");
+ 	mainGroup
+ 		.append("text")
+   		.attr("x",20)
+ 		.attr("y", h-1200)
+ 		.text("1200");
+ 	mainGroup
+ 		.append("text")
+   		.attr("x",20)
+ 		.attr("y", h-4500)
+ 		.text("4500");
+ 	mainGroup
+ 		.append("text")
+   		.attr("x",20)
+ 		.attr("y", h-3000)
+ 		.text("3000");
+ 	mainGroup
+ 		.append("text")
+   		.attr("x",20)
+ 		.attr("y", h-2000)
+ 		.text("2000");
+
+
+
+   	//mountain
+   	//http://codepen.io/MyXoToD/pen/ilwuD
+
+   /*	const maiuntain = svg
+   	.append("path")
+   	.attr("d", "M532.437,417.672c-0.562-2.805-3.023-4.823-5.884-4.823h-6.82 c-4.348-0.073-7.853-3.61-7.863-7.974v-11.522c0-2.037-1.033-3.935-2.744-5.04l-21.138-13.654l-31.396-35.691 c-0.252-0.286-0.53-0.548-0.832-0.781l-57.749-44.714l-55.161-69.485c-1.139-1.434-2.869-2.27-4.699-2.27c-0.009,0-0.018,0-0.026,0 c-1.841,0.008-3.575,0.86-4.706,2.312l-36.694,47.082l-16.274-14.117c-1.135-0.984-2.535-1.468-3.93-1.468 c-1.646,0-3.286,0.675-4.47,1.996L153.927,389.347c-0.986,1.101-1.532,2.526-1.532,4.004v13.604 c-0.226,3.049-2.138,5.628-4.828,6.771c-7.145,2.901-11.682,9.604-11.682,18.268c0,11.239,7.93,19.396,18.856,19.396l369.327-0.396 c3.313,0,6-2.687,6-6v-14.889c0,0,0.077-1.695,0.474-2.375c0.583-1,0.783-1.349,1.196-2.101c0.279-0.508,0.487-1.061,0.611-1.644 c0.271-1.272,0.311-2.727,0.311-3.48C532.66,419.368,532.585,418.415,532.437,417.672z")
    	.attr("x", 0)
-   	.attr("y", 0)
-   	.attr("height", ionosfeerHeight - thermopauzeHeight)
-   	.attr("width", w)
-   	.attr("fill", "transparent");
+   	.attr("y", 0);*/
 
 
-   	let starsGroup = ionosfeer.append("g");
+   	//ozone layer
+   	const ozoneLayer = stratopauze.append("g"); // 20-30km from earth => 20 000m => 2000
+   	
+   	ozoneLayer
+   		.attr("id", "ozoneLayer")
+ 		.attr("transform", "translate(0," + 1500 +")")
+   		.append("rect")
+   		.attr("x", 0)
+   		.attr("y", 0)
+   		.attr("height", 1000)
+   		.attr("width", w)
+   		.attr("fill", "url(#ozoneLayerGradient)");
 
-   	function generateStars(num){
+
+
+   	//stars
+
+   	let dataset = [];
+   	const starsGroup = mainGroup.append("g");
+
+   	function generateStarsIonosphere(num){
 		let arr = [];
 		for(var i = 0; i <= num; i++){
 			arr.push(3);
@@ -172,47 +272,13 @@
 		return arr;
 	}
 
-	dataset = generateStars(500);
-
 	function randmizeStarPosition(){
 		let width = Math.floor(Math.random() * w) + 1;
 		let height = Math.floor(Math.random() * (ionosfeerHeight - thermopauzeHeight)) + 1;
 		return [width, height];
 	}
 
-  	
-	
-	d3.selectAll("circle")
-		.attr("class", "star");
-
-	
-	let rocket = mainGroup
-				.append("rect")
-				.attr("class", "rocket")
-   				.attr("x", w/2)
-   				.attr("y", h-rocketHeight)
-   				.attr("width", 20)
-   				.attr("height", rocketHeight);
-
-	function followRocket (yOfRocket, yOfViewPOrt, speedOfFlight, distanceOfFlight, durationOfFlight){
-		//durationOfFlight = (distanceOfFlight/speedOfFlight);
-
-		durationOfFlight = 20000;
-		svg 
-   		.transition()
-		.duration(durationOfFlight)
-		.attr("viewBox", " " + 0 + " "+ (h-distanceOfFlight-rocketHeight) + " " + w + " " + h + " ");
-
-		d3.selectAll(".rocket")
-			.transition()
-			.duration(durationOfFlight)
-			.attr("y", h - distanceOfFlight);
-
-	}
-
-	
-	//followRocket (0,0, 200, 10000, 0);
-
+	dataset = generateStarsIonosphere(500);
 	let stars = starsGroup.selectAll("circle")
                 .data(dataset)
                 .enter()
@@ -227,12 +293,63 @@
 			            return d;
 			    })
 			    //style
-			    .attr("fill", "yellow");
-	//loop to change dinamically coordinates of the rocket
-	
+			    .attr("fill", "white");
 
-	//var element = document.getElementById("SomeElementYouWantToAnimate");
-	//element.style.position = 'absolute';
+	
+	//d3.selectAll("circle").attr("class", "star");
+
+	//rocket	
+	let rocket = mainGroup
+				.append("rect")
+				.attr("class", "rocket")
+   				.attr("x", w/2)
+   				.attr("y", h-rocketHeight)
+   				.attr("width", 20)
+   				.attr("height", rocketHeight);
+
+	/*function followRocket (yOfRocket, yOfViewPOrt, speedOfFlight, distanceOfFlight, durationOfFlight){
+
+		durationOfFlight = 20000;
+		svg 
+   		.transition()
+		.duration(durationOfFlight)
+		.attr("viewBox", " " + 0 + " "+ (h-distanceOfFlight-rocketHeight) + " " + w + " " + h + " ");
+
+		d3.selectAll(".rocket")
+			.transition()
+			.duration(durationOfFlight)
+			.attr("y", h - distanceOfFlight);
+
+	}*/
+
+	
+	//followRocket (0,0, 200, 10000, 0);
+
+	/*function drawStarsAtYPosition( YPosition){
+		dataset = generateStarsIonosphere(500);
+		function calculateStarPosition(){
+			let width = Math.floor(Math.random() * w) + 1;
+			let height = Math.floor(Math.random() * YPosition+40) + YPosition-40;
+			return [width, height];
+		}
+
+		let stars = starsGroup.selectAll("circle")
+                .data(dataset)
+                .enter()
+                .append("circle")
+                .attr("cx", function(d, i) {
+			        return calculateStarPosition()[0];
+			    })
+       			.attr("cy", function(){
+       				return calculateStarPosition()[1];
+       			})
+			    .attr("r", function(d) {
+			            return d;
+			    })
+			    //style
+			    .attr("fill", "white");
+
+	}*/
 	
 	function launchRocket(yPosition, xPosition){
 		var yPos = yPosition;
@@ -248,6 +365,7 @@
 		  svg.attr("viewBox", " " + 0 + " "+ (h-yPos-rocketHeight) + " " + w + " " + h + " ");
 		 
 		  d3.selectAll(".rocket").attr("y", (h-yPos));
+		  //drawStarsAtYPosition(h-yPos);
 
 		  if (yPos < (30000-rocketHeight)) {
 		    rocketFly = window.requestAnimationFrame(step);
@@ -265,9 +383,40 @@
 	    launchRocket(0, 0);
 	});
 
+	/*
+		function launchRocket(timestamp, yPosition, xPosition){
+		function step(timestamp) {
+		  if (!start) start = timestamp;
+
+		  var progress = timestamp - start;
+
+		  svg.attr("viewBox", " " + (xPosition- rocketHeight) + " "+ (h-yPosition-rocketHeight) + " " + w + " " + h + " ");
+		 
+		  d3.selectAll(".rocket").attr("y", (h-yPosition));
+		  d3.selectAll(".rocket").attr("x", (h-xPosition));
+
+		  if (progress < (30000-rocketHeight)) {
+		    window.requestAnimationFrame(step);
+		  } else if (progress >= (30000-rocketHeight)){
+			  cancelAnimationFrame(step);
+		  }
+		}
+
+		window.requestAnimationFrame(step);
+	}
+
+
 	
 
+	document.getElementById("start").addEventListener("click", function() {
+	  launchRocket(0, 5000, 200);
+	});
 
+	document.getElementById("stop").addEventListener("click", function() {
+	  cancelAnimationFrame(step);
+	});
+	*/
+	
 	</script>
 </body>
 </html>
